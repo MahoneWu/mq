@@ -194,6 +194,6 @@
     </dependency>
   </dependencies>
   <build>
-    <finalName>test</finalName>
+    <finalName>mqtest</finalName>
   </build>
 </project>
