@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:p="http://www.springframework.org/schema/p" xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:jms="http://www.springframework.org/schema/jms"
+       xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/jms
+        http://www.springframework.org/schema/jms/spring-jms-4.1.xsd">
+
+
+    <!-- 定义消息主题（Topic） -->
+    <bean id="topicDestination" class="org.apache.activemq.command.ActiveMQTopic">
+        <constructor-arg>
+            <value>M_topic</value>
+        </constructor-arg>
+    </bean>
+
+    <!-- 配置JMS模板（Topic），pubSubDomain="true"-->
+    <bean id="topicJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="defaultDestination" ref="topicDestination" />
+        <property name="pubSubDomain" value="true" />
+        <property name="receiveTimeout" value="10000" />
+    </bean>
+
+    <!-- 消息主题监听者 和 主题监听容器 可以配置多个，即多个订阅者 -->
+    <!-- 消息主题监听者(Topic) -->
+    <bean id="topicMessageListener" class="com.mouse.moon.message.listener.TopicMessageListener" />
+    <!-- 主题监听容器 （Topic） -->
+    <bean id="topicJmsContainer"
+          class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="destination" ref="topicDestination" />
+        <property name="messageListener" ref="topicMessageListener" />
+    </bean>
+</beans>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:p="http://www.springframework.org/schema/p" xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="
+			http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/context
+			http://www.springframework.org/schema/context/spring-context.xsd">
+    <!-- 隐式的向spring注册processor的功能 -->
+    <!-- http://www.cnblogs.com/iuranus/archive/2012/07/19/2599084.html  -->
+    <context:annotation-config/>
+    <context:component-scan annotation-config="true" base-package="com.mouse.moon">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+    </context:component-scan>
+
+
+
+</beans>

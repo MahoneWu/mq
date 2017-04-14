@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:p="http://www.springframework.org/schema/p" xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+			http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+        <!-- 配置JMS连接工厂 -->
+         <bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+             <property name="brokerURL" value="failover:(tcp://localhost:61616)" />
+         </bean>
+
+        <!-- 定义消息队列（Queue） -->
+         <bean id="queueDestination" class="org.apache.activemq.command.ActiveMQQueue">
+             <!-- 设置消息队列的名字 -->
+             <constructor-arg>
+                 <value>queue1</value>
+             </constructor-arg>
+         </bean>
+
+         <!-- 配置JMS模板（Queue），Spring提供的JMS工具类，它发送、接收消息。 -->
+         <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+             <property name="connectionFactory" ref="connectionFactory" />
+             <property name="defaultDestination" ref="queueDestination" />
+             <property name="receiveTimeout" value="10000" />
+         </bean>
+
+         <!--queue消息生产者 -->
+         <bean id="producerService" class="com.mouse.moon.service.impl.QueueProducerServiceImpl">
+             <property name="jmsTemplate" ref="jmsTemplate"></property>
+         </bean>
+
+         <!--queue消息消费者 -->
+         <bean id="consumerService" class="com.mouse.moon.service.impl.QueueConsumerServiceImpl">
+             <property name="jmsTemplate" ref="jmsTemplate"></property>
+         </bean>
+
+         <!-- 定义消息队列（Queue），我们监听一个新的队列，queue2 -->
+         <bean id="queueDestination2" class="org.apache.activemq.command.ActiveMQQueue">
+             <!-- 设置消息队列的名字 -->
+             <constructor-arg>
+                 <value>queue2</value>
+             </constructor-arg>
+         </bean>
+
+         <!-- 配置消息队列监听者（Queue），代码下面给出，只有一个onMessage方法 -->
+         <bean id="queueMessageListener" class="com.mouse.moon.message.listener.QueueMessageListener" />
+
+         <!-- 消息监听容器（Queue），配置连接工厂，监听的队列是queue2，监听器是上面定义的监听器 -->
+         <bean id="jmsContainer"
+             class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+             <property name="connectionFactory" ref="connectionFactory" />
+             <property name="destination" ref="queueDestination2" />
+             <property name="messageListener" ref="queueMessageListener" />
+         </bean>
+</beans>
